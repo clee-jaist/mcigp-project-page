@@ -94,7 +94,6 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
             color: var(--primary-color);
-
         }
 
         .abstract {
@@ -122,6 +121,33 @@
             color: #333;
             margin-top: 10px;
             padding: 0 20px;
+        }
+
+        /* YouTube Video Grid */
+        .youtube-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .youtube-item {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .youtube-item iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
         }
 
         /* Video */
@@ -198,6 +224,11 @@
             .container {
                 padding: 1rem;
             }
+
+            .youtube-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -207,7 +238,6 @@
     <h1>Monozone-Centric Instance Grasping Policy in Large-scale Dense Clutter</h1>
     <p class="authors">
         <a href="https://clee-jaist.github.io/" target="_blank">Chenghao Li</a>,
-<!--        <a href="https://fp.jaist.ac.jp/public/Default2.aspx?id=656" target="_blank">Razvan Beuran</a>,-->
         <a href="https://fp.jaist.ac.jp/public/Default2.aspx?id=352&l=1" target="_blank">Nak Young Chong</a>
     </p>
     <p class="affiliation" style="margin-top: 0;">Japan Advanced Institute of Science and Technology (JAIST)</p>
@@ -235,95 +265,163 @@
     <section id="abstract">
         <h2>Abstract</h2>
         <div class="abstract">
-            Despite the impressive performance of existing vision-guided robot grasping methods in dense clutter, their reliance on a fixed view often results in incomplete object geometry in the view boundary and limits grasping in more challenging large-scale dense clutter. Moreover, analyzing all objects during grasping can detract from the reasoning for specific objects. This work proposes the <strong style="color: #2c3e50;">Monozone-centric Instance Grasping Policy (MCIGP)</strong> to solve these problems. Specifically, the first part is the <strong style="color: #2c3e50;">Monozone View Alignment (MVA)</strong>, wherein we design the <strong style="color: #2c3e50;">dynamic monozone</strong> that can align the camera view according to different objects during grasping, thereby alleviating view boundary effects and realizing grasping in large-scale dense clutter scenarios. Then, we devise the <strong style="color: #2c3e50;">Instance-specific Grasp Detection (ISGD)</strong> to predict and optimize grasp candidates for one specific object within the monozone, ensuring an in-depth analysis of this object. We performed over 8,000 real-world grasping experiments in different cluttered scenarios with 300 novel objects, demonstrating that MCIGP significantly outperforms seven competitive grasping methods. Notably, in a large-scale densely cluttered scene involving 100 different household goods, MCIGP pushed the grasp success rate to 84.9%. To the best of our knowledge, no previous work has demonstrated similar performance.
+            Despite the impressive performance of existing vision-guided robot grasping methods in dense clutter, their reliance on a fixed view often results in incomplete object geometry in the view boundary and limits grasping in more challenging large-scale dense clutter. Moreover, analyzing all objects during grasping can detract from the reasoning for specific objects. This work proposes the <strong style="color: #2c3e50;">Monozone-centric Instance Grasping Policy (MCIGP)</strong> to solve these problems. Specifically, the first part is the <strong style="color: #2c3e50;">Monozone View Alignment (MVA)</strong>, wherein we design the <strong style="color: #2c3e50;">dynamic monozone</strong> that can align the camera view according to different objects during grasping, thereby alleviating view boundary effects and realizing grasping in large-scale dense clutter scenarios. Then, we devise the <strong style="color: #2c3e50;">Instance-specific Grasp Detection (ISGD)</strong> to predict and optimize grasp candidates for one specific object within the monozone, ensuring an in-depth analysis of this object. We performed <strong style="color: #2c3e50;">over 8,000 real-world grasping</strong> experiments in different cluttered scenarios with <strong style="color: #2c3e50;">300 novel objects</strong>, demonstrating that MCIGP significantly outperforms seven competitive grasping methods. Notably, in a large-scale densely cluttered scene involving 100 different household goods, MCIGP pushed the grasp success rate to 84.9%. To the best of our knowledge, no previous work has demonstrated similar performance.
         </div>
-
     </section>
 
     <section id="highlights">
         <h2>Highlights</h2>
         <div class="abstract">
-            This work explores adversarial attacks from a safety-oriented perspective, leveraging their benign potential to realize <strong style="color: #2c3e50;">safe grasping</strong> in cluttered <strong style="color: #2c3e50;">HRI</strong> scenarios. By designing shape-adaptive, quality score–based benign adversarial examples, our method modifies the grasping sequence to prioritize objects away from the human hand and its vicinity, thereby reducing collision risks without triggering emergency stops. This study provides a <strong style="color: #2c3e50;">new paradigm</strong> for <strong style="color: #2c3e50;">benign adversarial attacks</strong> in real-world robotic grasping and offers practical guidance for the safe deployment of DNN-based grasping systems.
+            Both incomplete object geometry and over-analyzing all objects in a scene can lead a grasping model to generate <strong style="color: #2c3e50;">inferior grasp candidates</strong>, potentially causing objects to <strong style="color: #2c3e50;">splash</strong> at high speed, posing safety risks to human workers. This work demonstrates that simply <strong style="color: #2c3e50;">moving the camera</strong> toward a target object and <strong style="color: #2c3e50;">analyzing only that object</strong> can substantially improve grasp success rates while alleviating these issues through <strong style="color: #2c3e50;">solid experiments</strong>, offering feasible insights for achieving <strong style="color: #2c3e50;">safe grasping</strong> in dense clutter.
         </div>
 
         <div class="figure">
             <img src="mcigp_pipeline.jpg" alt="QFAAP Pipeline">
-            <p class="caption">The pipeline of QFAAP:</strong> AQP + hand segmentation → PQGD adaptation → quality map modification → safe grasp selection.</p>
+            <p class="caption">The pipeline of MCIGP: moving camera (MVA) → segmentation (CPS) → grasp candidate generation → simpling and optimiztion (GCO & GCS & OGR) → final grasp.</p>
         </div>
     </section>
 
     <section id="results1">
-        <h2>Results - Detection Comparison with First-Group Baselines</h2>
-        <div class="video-grid">
-            <div class="video-item caption">
-                The first-group baselines including Original (the original grasping model) and Original-SZ (a variant of the grasping model where the quality score of the hand region is set to zero). This experiment demonstrates that our method significantly outperforms these methods in suppressing the highest quality scores (second row of the video).
+        <h2>Results - Comparison with First Group Baselines (Non-cluttered)</h2>
+        <div class="youtube-grid">
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/_AfZLWWoYJQ" allowfullscreen></iframe>
             </div>
-            <div class="video-item">
-                <video controls autoplay muted loop>
-                    <source src="videos/base1.mp4" type="video/mp4">
-                </video>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/X5mK59wlgDQ" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/SXX71B8mvr8" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/ol8Y7oIjDX0" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/yNCYxAvCAHM" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/XKMa-eUrIGk" allowfullscreen></iframe>
             </div>
         </div>
     </section>
 
     <section id="results2">
-        <h2>Results - Detection Comparison with Second-Group Baselines</h2>
-        <div class="video-grid">
-            <div class="video-item caption">
-                The second-group baselines including Original-DSZ (enhanced version of Original-SZ with the zeroed area dilation) and Original-Decay (enhanced version of Original-DSZ with the distance-based linear decay). Our method also shows better performance than these methods.
+        <h2>Results - Comparison with First Group Baselines (Piled 20 Objects)</h2>
+        <div class="youtube-grid">
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/6P9F_YORhbg" allowfullscreen></iframe>
             </div>
-            <div class="video-item">
-                <video controls autoplay muted loop>
-                    <source src="videos/base2.mp4" type="video/mp4">
-                </video>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/XzTMoSDt4jQ" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/Mp3b0NyHVMM" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/Bymn2LuagvI" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/WwY7yjg8y8U" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/w8_RKwcISUI" allowfullscreen></iframe>
             </div>
         </div>
     </section>
 
     <section id="results3">
-        <h2>Results - Grasping Comparison with and without PQGD</h2>
-        <div class="video-grid">
-            <div class="video-item caption">
-                When PQGD is not applied, AQP shows limited effectiveness due to its poor adaptability to variations in hand shape, thus hard to realize safe grasping in human-robot interaction.
+        <h2>Results - Comparison with Second Group Baselines (Piled 50 Objects)</h2>
+        <div class="youtube-grid" style="grid-template-rows: repeat(4, 1fr);">
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/lYlTpoQMeU4" allowfullscreen></iframe>
             </div>
-            <div class="video-item">
-                <video controls autoplay muted loop style="width: 92%; height: auto; display: block; margin: 0 auto;">
-                    <source src="videos/real_pqgd.mp4" type="video/mp4">
-                </video>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/yB6IPYtj2vc" allowfullscreen></iframe>
             </div>
-
-            <div class="video-item">
-                    <video controls autoplay muted loop style="width: 92%; height: auto; display: block; margin: 0 auto;">
-                        <source src="videos/real_all.mp4" type="video/mp4">
-                    </video>
-                </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/DUaGHM1vvik" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/nhnXp2YrNYw" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/2MP3idJABt8" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/DUaGHM1vvik" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/dFyaOhvMTEY" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/CXdSal09TWU" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/xwTCyR6FFVA" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/MiuX-JODlJw" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/jzQHvUiqfeM" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/ELo7cLR81hw" allowfullscreen></iframe>
+            </div>
         </div>
-
     </section>
 
     <section id="results4">
-        <h2>Results - Grasping in Static and Dynamic Cluttered Scenarios</h2>
-        <div class="video-grid">
-            <div class="video-item caption">
-                Our method enables safe grasping in both static cluttered (top) and dynamic cluttered (bottom) scenarios when human hands interact with the robot. Specifically, the human hand can directly act as a source of quality score interference, suppressing the grasp quality scores of nearby objects. This, in turn, alters the grasping priority and guides the robot to grasp other objects that are farther away from the human hands.
+        <h2>Results - Comparison with GraspNet 6D (Piled 50 Objects)</h2>
+        <div class="youtube-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/MiuX-JODlJw" allowfullscreen></iframe>
             </div>
-            <div class="video-item">
-                <video controls autoplay muted loop style="width: 92%; height: auto; display: block; margin: 0 auto;">
-                    <source src="videos/static_clutter.mp4" type="video/mp4">
-                </video>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/TBz0uiGRVfw" allowfullscreen></iframe>
             </div>
+        </div>
+    </section>
 
-            <div class="video-item">
-                <video controls autoplay muted loop style="width: 92%; height: auto; display: block; margin: 0 auto;">
-                    <source src="videos/dynamic_clutter.mp4" type="video/mp4">
-                </video>
+    <section id="results5">
+        <h2>Results - The Difference Between D-MVA and Q-MVA (Piled 10 Objects)</h2>
+        <div class="youtube-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/-uDxbJVcEmA" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/EhfMccvVLDY" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <section id="results6">
+        <h2>Results - The Impact of with or without CPS (Piled 100 Objects)</h2>
+        <div class="youtube-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/xTmhEDfuFEs" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/_M-q56Lss3A" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <section id="results7">
+        <h2>Results - The Impact of with or without GCO (Piled 100 Objects)</h2>
+        <div class="youtube-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/Tq3hHbrlEkM" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-item">
+                <iframe src="https://www.youtube.com/embed/1tt0wW0oqok" allowfullscreen></iframe>
             </div>
         </div>
     </section>
 
     <section id="bibtex">
         <h2>BibTeX</h2>
-        <pre>@article{li2025qfaap,
+        <pre>@article{li2025mcigp,
   title={Monozone-Centric Instance Grasping Policy in Large-scale Dense Clutter},
   author={Chenghao Li, and Nak Young Chong},
   journal={IEEE/ASME Transactions on Mechatronics},
